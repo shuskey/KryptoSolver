@@ -3,9 +3,6 @@
 //#region Node Definitions
 let unknown x y :float = 0.0
 
-type SolutionListPassOne = SolutionListPassOne of string[] list
-type SolutionListFinalOutput = SolutionListFinalOutput of string[] list
-
 type Node =
     | Operator of operatorFunction : (float->float->float) * operatorName : string * orderOfOperationPriority : int
     | Operand of value : float
@@ -29,7 +26,7 @@ let rec getNodeListString nodeList =
     | h::t -> sprintf "%s, %s" (getNodeString h) (getNodeListString t)
 //#endregion
 
-//#region Console output helpers
+//#region helpers
 let pause() = 
     printfn "%s" "<Press any key>"
     System.Console.ReadKey() |> ignore
@@ -79,11 +76,9 @@ let kryptoOperators = [Node.Operator((+),"+", 1); Node.Operator((-),"-", 1); Nod
 /// Actions
 let dealKryptoCards = 
     let random = System.Random()
-
     fun count -> 
         let cards = [for i in 1..count -> List.nth kryptoCardDeck (random.Next(kryptoCardDeck.Length))]
         cards
-
 
 let dealAKryptoCard() = 
     let random = System.Random()
@@ -94,7 +89,6 @@ let rec kryptoCardsAsString cards =
     | h::t -> sprintf "%s %s" (getNodeString h) (kryptoCardsAsString t)
     | [] -> ""
     
-
 //#endregion
 
 //region Krypto Game Run
@@ -111,14 +105,4 @@ let shuffleKryptoDeck =
 let myRandom =
     let random = System.Random()
     random.Next(100)
-
 //#endregion
-
-#if NOTNOW
-[<EntryPoint>]
-let main arg =
-
-    pause()
-
-    0 // return an integer exit code
-#endif

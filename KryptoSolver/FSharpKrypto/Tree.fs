@@ -58,12 +58,6 @@ let allTreeLeafList operands operators =
 //#endregion
 
 //#region Display Tree helpers
-//let function getTreeString' =
-//    | Empty -> ""
-//    | Branch (_ as operand, Empty, Empty) -> sprintf " %s " (Krypto.getNodeString operand) 
-//    | Branch (_ as operator, lt, rt) -> sprintf " (%s %s %s) " (getTreeString lt) (Krypto.getNodeString operator) (getTreeString rt)
-//
-
 let rec getTreeString' parentOrderOfOperationPriority t =
     match t with
     | Empty -> ""
@@ -84,10 +78,6 @@ let rec getTreeResult t =
 
 //#endregion
 
-//printfn "%s" (Krypto.getNodeListString Krypto.CardsInPlay)
-//printfn "%s" (Krypto.getNodeListString Krypto.kryptoOperators) 
-//let treeSolution = getTreeListString (allTreeLeafList Krypto.CardsInPlay Krypto.kryptoOperators)
-
 //#region Krypto Game Solve
 let mutable AllPermutationsOfCardsInPlay = Krypto.getPermutations Krypto.CardsInPlay
 let mutable AllPossibleOperatorCombinations = Krypto.getPermutationsWithRepitition Krypto.numberOfOperators Krypto.kryptoOperators
@@ -106,6 +96,7 @@ let kryptoSolutionWithTheseCards ( array : ResizeArray<int>) =
     Krypto.krytoResultCard <- Krypto.Operand(float array.[5])
     AllPermutationsOfCardsInPlay <- Krypto.getPermutations Krypto.CardsInPlay
     AllPossibleOperatorCombinations <- Krypto.getPermutationsWithRepitition Krypto.numberOfOperators Krypto.kryptoOperators
+
     for onePermutationOfCards in AllPermutationsOfCardsInPlay do
         totalCardPermutations <- totalCardPermutations + 1
         totalOperatorCombinations <- 0
@@ -116,25 +107,18 @@ let kryptoSolutionWithTheseCards ( array : ResizeArray<int>) =
                 totalTreeLeafListCombinations <- totalTreeLeafListCombinations + 1
                 totalCombinationsCount <- totalCombinationsCount + 1
                 if (getTreeResult oneTreeInTheForest) = (Krypto.getNodeValue Krypto.krytoResultCard) then
-                    totalSolutionsCount <- totalSolutionsCount + 1
-                    //solutionString <- sprintf "%s\r\n%s = %.0f" solutionString (getTreeString oneTreeInTheForest) (Krypto.getNodeValue Krypto.krytoResultCard)
+                    totalSolutionsCount <- totalSolutionsCount + 1            
                     solutionTreeList <- List.append solutionTreeList [oneTreeInTheForest]
-    for aSolutionTree in solutionTreeList do
-        solutionString <- sprintf "%s\r\n%s" solutionString (getTreeString aSolutionTree)
+    // get a list of strings that we can work on to reduce duplicates
+    let solutionStringList = List.map getTreeString solutionTreeList
+    let secondPassSolutionStringList = solutionStringList |> List.distinct
+    
+    // these next lines are all about returning the output to the calling function
+    for aSolutionString in solutionStringList do
+        solutionString <- sprintf "%s\r\n%s" solutionString aSolutionString
+    solutionString <- sprintf "%s\r\n===SECOND PASS WITH DUPLICATES REMOVED===" solutionString
+    for aSolutionString in secondPassSolutionStringList do
+        solutionString <- sprintf "%s\r\n%s" solutionString aSolutionString
     sprintf "Solutions/CardPermutations/OperatorCombinations/ParenthesisCombinations/TotalCombinations = %i/%i/%i/%i/%i\r\nSolutions = %s" totalSolutionsCount totalCardPermutations totalOperatorCombinations totalTreeLeafListCombinations totalCombinationsCount solutionString
 
 //#endregion
-
-//[<EntryPoint>]
-//let main arg =
-////let main a =
-////    for tree in allTreeLeafs 4 do
-////        printfn "All Trees with 4 leafs %A" tree
-//
-//    
-//    printfn "%s" (getTreeListString (allTreeLeafList Krypto.CardsInPlay Krypto.kryptoOperators))
-//    
-//    Krypto.pause()
-//
-//    
-//    0 // return an integer exit code
