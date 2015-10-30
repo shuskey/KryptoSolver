@@ -3,10 +3,14 @@
 // TODO
 // (DONE)Remove redundant parentheses, see: http://stackoverflow.com/questions/18400741/remove-redundant-parentheses-from-an-arithmetic-expression
 // Check for and eliminate duplicate answers, perhaps order the equation then do a string compare
+//   to do this a flattenBTreeToGTree is needed, the a call to a sortGTree nodes, then a getGTreeString
+//   It is my beleif that a list of strings that have gone through this flattening and sorting, will be ready
+//   for a "solutionStringList |> List.distinct" that will eliminate far more dulpicates that we have inherited because of our
+//   crazy 'all permutations' 'all combinations' that we wnet through to find ALL answers
 
 //#region General Tree
 //General Tree Reference: http://stackoverflow.com/questions/2815236/f-recursive-collect-and-filter-over-n-ary-tree
-type GeneralTree = Empty | Node of Krypto.Node * GeneralTree list
+type 'a GeneralTree = Empty | GBranch of 'a * 'a GeneralTree list
 
 //#endregion
 
@@ -23,8 +27,21 @@ type GeneralTree = Empty | Node of Krypto.Node * GeneralTree list
 ///       1.0 2.0  3.0  4.0
 ///
 /// In F#, we can characterize binary trees with a type definition: 
-type 'a Tree = Empty | Branch of Krypto.Node * Krypto.Node Tree * Krypto.Node Tree
+type 'a Tree = Empty | Branch of 'a * 'a Tree * 'a Tree
 
+// BTreeToGTree Converts a binary tree to a General Tree
+// Once this is created, I need to create a function to Flatten a binary tree into a General Tree perhaps called flattenBTreetoGTree
+// the flatening will occur with neighboring nodes that have operations of the same priotiy
+// for example a binary tree of (1 + (2 + (3 + (4 + 5)))) will flaten into a General Tree of (1 + 2 + 3 + 4 + 5)
+//
+#if NOTWORKINGYET
+let rec BTreeToGTree btree :Krypto.Node GeneralTree =
+    match btree with
+    | Empty -> GeneralTree.Empty
+    | Branch (Krypto.Operand(operand), Empty, Empty) -> GBranch (Krypto.Operand operand, GeneralTree.Empty)
+    | Branch (Krypto.Operator(f,s,o), lt, rt) -> GBranch (operand, [ (BTreeToGTree lt); (BTreeToGTree rt)])
+
+#endif
 ///
 /// This says that a Tree of type a consists of either an Empty node, or a Branch containing one 
 /// value of type a with exactly two subtrees of type Krypto.Node.
