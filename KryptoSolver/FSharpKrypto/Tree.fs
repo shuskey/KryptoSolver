@@ -1,11 +1,16 @@
 ﻿module FSharpKrypto.Tree
 
 // TODO
-// Remove redundant parentheses, see: http://stackoverflow.com/questions/18400741/remove-redundant-parentheses-from-an-arithmetic-expression
+// (DONE)Remove redundant parentheses, see: http://stackoverflow.com/questions/18400741/remove-redundant-parentheses-from-an-arithmetic-expression
 // Check for and eliminate duplicate answers, perhaps order the equation then do a string compare
 
+//#region General Tree
+//General Tree Reference: http://stackoverflow.com/questions/2815236/f-recursive-collect-and-filter-over-n-ary-tree
+type GeneralTree = Empty | Node of Krypto.Node * GeneralTree list
 
-//#region Tree Branch leaf
+//#endregion
+
+//#region Binary Tree Branch leaf
 /// Taken from Ninety-Nine F# Problems - Problems 54 - 60 - Binary trees
 /// http://www.fssnip.net/snippet/as/0
 /// A binary tree is either empty or it is composed of a root element and two successors, 
@@ -37,7 +42,7 @@ type 'a Tree = Empty | Branch of Krypto.Node * Krypto.Node Tree * Krypto.Node Tr
 let leaf x = Branch (x, Empty, Empty) 
 //#endregion
 
-//#region leaf driven Trees
+//#region leaf driven Binary Trees
 let rec allTreeLeafList' leafCount operands operators =
     match leafCount, operands, operators with
         | 0, _ , _ -> [Empty]
@@ -57,7 +62,7 @@ let allTreeLeafList operands operators =
     | _, _ -> allTreeLeafList' operands.Length operands operators
 //#endregion
 
-//#region Display Tree helpers
+//#region Display Binary Tree helpers
 let rec getTreeString' parentOrderOfOperationPriority t =
     match t with
     | Empty -> ""
