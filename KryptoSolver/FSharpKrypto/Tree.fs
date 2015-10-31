@@ -3,36 +3,24 @@
 // TODO
 // (DONE)Remove redundant parentheses, see: http://stackoverflow.com/questions/18400741/remove-redundant-parentheses-from-an-arithmetic-expression
 // Check for and eliminate duplicate answers, perhaps order the equation then do a string compare
-//   to do this a flattenBTreeToGTree is needed, the a call to a sortGTree nodes, then a getGTreeString
-//   It is my beleif that a list of strings that have gone through this flattening and sorting, will be ready
-//   for a "solutionStringList |> List.distinct" that will eliminate far more dulpicates that we have inherited because of our
-//   crazy 'all permutations' 'all combinations' that we wnet through to find ALL answers
+//   To do this, a flattenBTreeToGTree is needed, then a call to a sortGTree nodes, then a getGTreeString.
+//   The resultant list of strings will be ready for a "solutionStringList |> List.distinct" that will eliminate far
+//   more dulpicates that we have inherited because of our crazy 'all permutations' 'all combinations' that we went 
+//   through to find ALL answers.
 
+// I am using the "F# Outlining" extension from Victor Milovanov
 //#region General Tree
-//General Tree Reference: http://stackoverflow.com/questions/2815236/f-recursive-collect-and-filter-over-n-ary-tree
+// General Tree Reference: 
+// http://stackoverflow.com/questions/2815236/f-recursive-collect-and-filter-over-n-ary-tree
+// A General Tree is either empty or it is composed of a root element and a list of successors, 
+// which are General Trees themselves.
+
 type 'a GeneralTree = Empty | GBranch of 'a * 'a GeneralTree list
 
-//#endregion
-
-//#region Binary Tree Branch leaf
-/// Taken from Ninety-Nine F# Problems - Problems 54 - 60 - Binary trees
-/// http://www.fssnip.net/snippet/as/0
-/// A binary tree is either empty or it is composed of a root element and two successors, 
-/// which are binary trees themselves.
-///  tree1
-///               +
-///           /       \
-///          -         x
-///         /  \      /  \
-///       1.0 2.0  3.0  4.0
-///
-/// In F#, we can characterize binary trees with a type definition: 
-type 'a Tree = Empty | Branch of 'a * 'a Tree * 'a Tree
-
-// BTreeToGTree Converts a binary tree to a General Tree
-// Once this is created, I need to create a function to Flatten a binary tree into a General Tree perhaps called flattenBTreetoGTree
+// BTreeToGTree Converts a Binary Tree to a General Tree
+// Once this is created, I need to create a function to flatten a binary tree into a General Tree perhaps called flattenBTreetoGTree
 // the flatening will occur with neighboring nodes that have operations of the same priotiy
-// for example a binary tree of (1 + (2 + (3 + (4 + 5)))) will flaten into a General Tree of (1 + 2 + 3 + 4 + 5)
+// for example a Binary Tree of (1 + (2 + (3 + (4 + 5)))) will flaten into a General Tree of (1 + 2 + 3 + 4 + 5)
 //
 #if NOTWORKINGYET
 let rec BTreeToGTree btree :Krypto.Node GeneralTree =
@@ -42,24 +30,41 @@ let rec BTreeToGTree btree :Krypto.Node GeneralTree =
     | Branch (Krypto.Operator(f,s,o), lt, rt) -> GBranch (operand, [ (BTreeToGTree lt); (BTreeToGTree rt)])
 
 #endif
-///
-/// This says that a Tree of type a consists of either an Empty node, or a Branch containing one 
-/// value of type a with exactly two subtrees of type Krypto.Node.
-///  
-/// Given this definition, the tree in the diagram above would be represented as: 
-/// 
+//#endregion
+
+//#region Binary Tree, Branch leaf
+// Binary Tree Reference:
+// http://www.fssnip.net/snippet/as/0
+// A Binary Tree is either empty or it is composed of a root element and two successors, 
+// which are binary trees themselves.
+//  tree1
+//               +
+//           /       \
+//          -         x
+//         /  \      /  \
+//       1.0 2.0  3.0  4.0
+//
+// In F#, we can characterize binary trees with a type definition: 
+type 'a Tree = Empty | Branch of 'a * 'a Tree * 'a Tree
+
+//
+// This says that a Tree of type a consists of either an Empty node, or a Branch containing one 
+// value of type a with exactly two subtrees of type Krypto.Node.
+//  
+// Given this definition, the tree in the diagram above would be represented as: 
+// 
 //let tree1 = Branch (Krypto.Operator((+), "+"), Branch (Krypto.Operator((-), "-"), Branch (Krypto.Operand(1.0), Empty, Empty),
 //                                Branch (Krypto.Operand(2.0), Empty, Empty)),
 //                            Branch (Krypto.Operator((*), "x"), Branch (Krypto.Operand(3.0), Empty, Empty),
 //                                Branch (Krypto.Operand(4.0), Empty, Empty)))
 
-/// Since a "leaf" node is a branch with two empty subtrees, it can be useful to define a 
-/// shorthand function:
+// Since a "leaf" node is a branch with two empty subtrees, it can be useful to define a 
+// shorthand function:
 
 let leaf x = Branch (x, Empty, Empty) 
 //#endregion
 
-//#region leaf driven Binary Trees
+//#region leaf functions on Binary Trees
 let rec allTreeLeafList' leafCount operands operators =
     match leafCount, operands, operators with
         | 0, _ , _ -> [Empty]
