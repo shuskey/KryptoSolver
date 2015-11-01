@@ -8,6 +8,12 @@ type Node =
     | Operand of value : float
     | Empty
 
+// Defining some operators for quick reference
+let OPlus = Operator((+), "+", 1)
+let OMinus = Operator((-), "-", 1)
+let OTimes = Operator((*), "x", 2)
+let ODivide = Operator((/), "÷", 2)
+
 let getNodeString node =
     match node with
     | Empty -> ""
@@ -71,7 +77,7 @@ let kryptoCardDeck = List.concat ((List.replicate 3 cardsUpTo6) @ (List.replicat
 let numberOfCardsInPlay = 5
 let numberOfOperators = numberOfCardsInPlay - 1
 // Here are the Operations in the form of a tuple
-let kryptoOperators = [Node.Operator((+),"+", 1); Node.Operator((-),"-", 1); Node.Operator((*),"x", 2); Node.Operator((/),"÷", 2)]
+let kryptoOperators = [OPlus; OMinus; OTimes; ODivide]
 
 /// Actions
 let dealKryptoCards = 
