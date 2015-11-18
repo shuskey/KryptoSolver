@@ -52,7 +52,8 @@ namespace WindowsFormsApplication1
         public void UpdateTxtBoxes()
         {
             txtCard1.Text = txtCard2.Text = txtCard3.Text = txtCard4.Text = txtCard5.Text = txtCard6.Text = "";
-            txtKryptoSolution.Text = txtResultCard.Text = "";
+            txtResultCard.Text = "";
+            txtKryptoSolution.Text = "Click the '" + CurrentGame.DealButtonText + "' Button to get started.";
 
             txtCard3.Visible = (CurrentGame.NumberOfOperands > 2);
             txtCard4.Visible = (CurrentGame.NumberOfOperands > 3);
@@ -79,7 +80,7 @@ namespace WindowsFormsApplication1
 
             txtResultCard.Text = CurrentGame.getTarget().ToString();
 
-            txtKryptoSolution.Text = "";
+            txtKryptoSolution.Text = "Now click the '" + CurrentGame.SolveButtonText + "' Button to have the computer solve this.";
 
             if (CurrentGameType == GameType.FourFours)
                 SolveKrypto();
@@ -97,7 +98,8 @@ namespace WindowsFormsApplication1
             catch (Exception)
             {
                 txtKryptoSolution.Text =
-                    "Invalid Input.  Please insure that the operands and target values are all integer numbers and try again.";
+                    "Invalid Input.  Please insure that the operands and target values are all integer numbers and try again." +
+                    "\r\n\nTry clicking the '" + CurrentGame.DealButtonText + "' Button." ;
             }
 
             SolveKrypto();
@@ -126,7 +128,9 @@ namespace WindowsFormsApplication1
             {
 
                 txtKryptoSolution.Text =
-                    "Invalid Input.  Please insure that the operands and target values are all integer numbers and try again.";
+                    "Invalid Input.  Please insure that the operands and target values are all integer numbers and try again."+
+                    "\r\n\nTry clicking the '" + CurrentGame.DealButtonText + "' Button.";
+
             }
 
         }
