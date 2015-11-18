@@ -9,11 +9,25 @@ type Node =
     | Empty
 
 // Defining some operators for quick reference
+let noop x y = 0.0
 let OPlus = Operator((+), "+", 1)
 let OMinus = Operator((-), "-", 1)
-let OTimes = Operator((*), "x", 2)
 let ODivide = Operator((/), "÷", 2)
+let OTimes = Operator((*), "x", 2)
+let ONone = Operator((noop), "#", 9)
 
+let IsMinus node =
+    match node with
+    | Empty -> false
+    | Operator(f,s,o) when s = "-" -> true
+    | _ -> false
+
+let IsDivide node =
+    match node with
+    | Empty -> false
+    | Operator(f,s,o) when s = "÷" -> true
+    | _ -> false
+        
 let getNodeString node =
     match node with
     | Empty -> ""
@@ -23,8 +37,14 @@ let getNodeString node =
 let getNodeValue node =
     match node with
     | Empty -> 0.0
-    | Operator(operatorName = n) -> 0.0
+    | Operator(_) -> 0.0
     | Operand(value = v) -> v
+
+let getNodeOOP node =
+    match node with
+    | Empty -> 0
+    | Operator(orderOfOperationPriority = p) -> p
+    | Operand(_) -> 0
 
 let rec getNodeListString nodeList =
     match nodeList with
@@ -45,15 +65,15 @@ let rec insertions x = function
 
 /// Gets all permutations with out repetition
 let rec getPermutations = function
-    | []      -> seq [ [] ]
-    | x :: xs -> Seq.concat (Seq.map (insertions x) (getPermutations xs))
+    | []      -> [ [] ]
+    | x :: xs -> List.concat (List.map (insertions x) (getPermutations xs))
 
 /// Gets all combinations and permutations (with repetition) of specified length from a list.
 let rec getPermutationsWithRepitition n lst = 
     match n, lst with
-    | 0, _ -> seq [[]]
-    | _, [] -> seq []
-    | k, _ -> lst |> Seq.collect (fun x -> Seq.map ((@) [x]) (getPermutationsWithRepitition (k - 1) lst))
+    | 0, _ ->  [[]]
+    | _, [] ->  []
+    | k, _ -> lst |> List.collect (fun x -> List.map ((@) [x]) (getPermutationsWithRepitition (k - 1) lst))
 //#endregion
 
 //#region List utilities
@@ -74,8 +94,8 @@ let cardsUpTo17 = [for f in 11.0..17.0 -> Node.Operand f ]
 let cardsUpTo25 = [for f in 18.0..25.0 -> Node.Operand f ]
 let kryptoCardDeck = List.concat ((List.replicate 3 cardsUpTo6) @ (List.replicate 4 cardsUpTo10) @ (List.replicate 2 cardsUpTo17) @ (List.replicate 1 cardsUpTo25))
 // The number of card that will be delt for this Krypto puzzle.  Note an additional "Result" card is always drawn as well
-let numberOfCardsInPlay = 5
-let numberOfOperators = numberOfCardsInPlay - 1
+let mutable numberOfCardsInPlay = 4
+let mutable numberOfOperators = numberOfCardsInPlay - 1
 // Here are the Operations in the form of a tuple
 let kryptoOperators = [OPlus; OMinus; OTimes; ODivide]
 
@@ -102,11 +122,11 @@ let mutable CardsInPlay = [for x in 1..numberOfCardsInPlay -> dealAKryptoCard()]
 let mutable krytoResultCard = dealAKryptoCard()
 //let kryptoCardsAndResultString = sprintf "%s = %s" (kryptoCardsAsString CardsInPlay) (getNodeString krytoResultCard)
 
-let shuffleKryptoDeck =
-    let random = System.Random()
-    CardsInPlay <- [for i in 1..numberOfCardsInPlay -> List.nth kryptoCardDeck (random.Next(kryptoCardDeck.Length))]
-    krytoResultCard <- List.nth kryptoCardDeck (random.Next(kryptoCardDeck.Length))
-    sprintf "%s = %s" (kryptoCardsAsString CardsInPlay) (getNodeString krytoResultCard)
+//let shuffleKryptoDeck =
+//    let random = System.Random()
+//    CardsInPlay <- [for i in 1..numberOfCardsInPlay -> List.nth kryptoCardDeck (random.Next(kryptoCardDeck.Length))]
+//    krytoResultCard <- List.nth kryptoCardDeck (random.Next(kryptoCardDeck.Length))
+//    sprintf "%s = %s" (kryptoCardsAsString CardsInPlay) (getNodeString krytoResultCard)
 
 let myRandom =
     let random = System.Random()
