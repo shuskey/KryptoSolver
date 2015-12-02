@@ -8,11 +8,19 @@ type Node =
     | Operand of value : float
     | Empty
 
+
+let myDiv (x: float) y =
+    let firstTry = x / y
+    if ((firstTry % 1.0) = 0.0)
+    then firstTry
+    else nan
+
+
 // Defining some operators for quick reference
 let noop x y = 0.0
 let OPlus = Operator((+), "+", 1)
 let OMinus = Operator((-), "-", 1)
-let ODivide = Operator((/), "÷", 2)
+let ODivide = Operator((myDiv), "÷", 2)
 let OTimes = Operator((*), "x", 2)
 let ONone = Operator((noop), "#", 9)
 
@@ -22,12 +30,23 @@ let IsMinus node =
     | Operator(f,s,o) when s = "-" -> true
     | _ -> false
 
+let IsPlus node =
+    match node with
+    | Empty -> false
+    | Operator(f,s,o) when s = "+" -> true
+    | _ -> false
+
 let IsDivide node =
     match node with
     | Empty -> false
     | Operator(f,s,o) when s = "÷" -> true
     | _ -> false
-        
+
+let IsTimes node =
+    match node with
+    | Empty -> false
+    | Operator(f,s,o) when s = "x" -> true
+    | _ -> false        
 let getNodeString node =
     match node with
     | Empty -> ""

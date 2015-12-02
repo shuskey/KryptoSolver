@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Windows.Forms;
 using FSharpKrypto;
 using KryptoSolver;
@@ -12,6 +13,7 @@ namespace WindowsFormsApplication1
         public GameDescriptor MathDiceGame = new GameDescriptor(GameType.MathDice);
         public GameDescriptor FourFoursGame = new GameDescriptor(GameType.FourFours);
         public GameType CurrentGameType = GameType.KryptoCards;
+        Stopwatch kryptoStopwatch = new Stopwatch();
 
         public GameDescriptor CurrentGame
         {
@@ -108,6 +110,9 @@ namespace WindowsFormsApplication1
         private void SolveKrypto()
         {
             List<int> kryptoCardsDelt = new List<int>();
+            
+
+            kryptoStopwatch.Start();
 
             txtKryptoSolution.Text = "Thinking...";
             //MessageBox.Show("Krypto Solver", "Here we go!");
@@ -123,6 +128,16 @@ namespace WindowsFormsApplication1
                 kryptoCardsDelt.Add(Convert.ToInt16(txtResultCard.Text));
 
                 txtKryptoSolution.Text = Tree.kryptoSolutionWithTheseCards(kryptoCardsDelt);
+
+
+
+                kryptoStopwatch.Stop();
+                TimeSpan elapsedTime = kryptoStopwatch.Elapsed;
+                string showTimeAs = String.Format("{0:00}:{1:00}:{2:00}.{3:00}", elapsedTime.Hours, elapsedTime.Minutes, elapsedTime.Seconds, elapsedTime.Milliseconds / 10);
+
+                txtKryptoSolution.Text += "\r\r\nElapsed Time: " + showTimeAs;
+                
+                kryptoStopwatch.Reset();
             }
             catch (Exception)
             {
