@@ -40,7 +40,7 @@ let rec getGTreeResult gt =
     match gt with
     | GeneralTree.Empty -> 0.0
     | GBranch (Krypto.Operand(operand), []) -> operand
-    | GBranch (Krypto.Operator(f,s,o), gth::gtt) -> List.fold (fun acc elem -> elem |> f acc) (getGTreeResult gth) (List.map getGTreeResult gtt)
+    | GBranch (Krypto.Operator(f,s), gth::gtt) -> List.fold (fun acc elem -> elem |> f acc) (getGTreeResult gth) (List.map getGTreeResult gtt)
     | GBranch (_, []) -> 0.0
 
 let getGTreeString gt =
@@ -100,30 +100,12 @@ type 'a Tree = Empty | Branch of 'a * 'a Tree * 'a Tree
 let leaf x = Branch (x, Empty, Empty) 
 //#endregion
 //#region Display Binary Tree helpers
-let rec getTreeStringO' parentOrderOfOperationPriority t =
-    match t with
-    | Empty -> ""
-    | Branch ( Krypto.Operand(operand) , Empty, Empty) -> sprintf "%.0f" operand
-    | Branch ( Krypto.Operator(f,s,o), lt, rt) -> sprintf "(%s%s%s)" (getTreeStringO' o lt) s (getTreeStringO' o rt)
-//    | Branch ( Krypto.Operator(f,s,o), lt, rt) when parentOrderOfOperationPriority > o -> sprintf "(%s%s%s)" (getTreeStringO' o lt) s (getTreeStringO' o rt)
-//    | Branch ( Krypto.Operator(f,s,o), lt, rt) -> sprintf "%s%s%s" (getTreeStringO' o lt) s (getTreeStringO' o rt)
-    | Branch (_, _, _) -> ""
-
-let rec getTreeResultO t =
-    match t with
-    | Empty -> 0.0
-    | Branch (Krypto.Operand(operand), Empty, Empty) -> operand
-    | Branch (Krypto.Operator(f,s,o), lt, rt) -> (getTreeResultO rt) |> f (getTreeResultO lt) 
-    | Branch (_, _, _) -> 0.0
-
-let getTreeStringO t =
-    sprintf "%s = %.0f" (getTreeStringO' 0 t) (getTreeResultO t) // Top parent, lowest order of operation -> Parentheses not needed
 
 let rec getTreeResult t =
     match t with
     | Empty -> 0.0
     | Branch (Krypto.Operand(operand), Empty, Empty) -> operand
-    | Branch (Krypto.Operator(f,s,o), lt, rt) -> (getTreeResult rt) |> f (getTreeResult lt) 
+    | Branch (Krypto.Operator(f,s), lt, rt) -> (getTreeResult rt) |> f (getTreeResult lt) 
     | Branch (_, _, _) -> 0.0
 
 let rec getTreeString' (parentOperator :Krypto.Node) t leftOrRight=
@@ -153,7 +135,7 @@ let rec getTreeString' (parentOperator :Krypto.Node) t leftOrRight=
 //    | Branch ( Krypto.Operator(f,s,o), lt, rt) -> sprintf "%s%s%s" (getTreeString' o lt) s (getTreeString' o rt)
 
 let getTreeString t more =
-    sprintf "%s %s = %.0f  more %s" (getTreeStringO t) (getTreeString' Krypto.ONone t "L") (getTreeResult t) more // Top parent, lowest order of operation -> Parentheses not needed
+    sprintf "%s = %.0f  more %s" (getTreeString' Krypto.ONone t "L") (getTreeResult t) more // Top parent, lowest order of operation -> Parentheses not needed
 
 //#region Binary and General Tree functions
 // BTreeToGTree Converts a Binary Tree to a General Tree
@@ -248,7 +230,7 @@ let rec allTreeLeafList' leafCount operands operators =
         | 1, (hand::tand), _ -> [leaf (hand)]
         | 2, (hand::tand), (htor::ttor) -> [Branch(htor, leaf (hand), leaf ((List.nth tand 0)))]
         | _, _, (htor::ttor) -> 
-            [ for i=1 to leafCount / 2 do   // was leafCount -1 for all possible
+            [ for i=1 to leafCount - 1 do   // was leafCount -1 for all possible, leafCout/2 to get 1/2
                 for lt in allTreeLeafList' i (fst (Krypto.split i operands)) (fst (Krypto.split (i-1) ttor)) do
                     for rt in allTreeLeafList' (leafCount - i) (snd (Krypto.split i operands)) (snd (Krypto.split (i-1) ttor)) do
                         yield Branch(htor, lt, rt) ]
@@ -285,6 +267,23 @@ let GetAllButLast list =
         | x :: xs -> but_last' xs (x :: acc)
     if List.isEmpty list then [] else but_last' list []
 
+let distanceTo option target =
+     abs (target - option)
+
+let closestToTarget (acc :float) (option :float) (target :float) :(float) = 
+    if (option.Equals(nan)) then
+        acc
+    else
+        if (distanceTo acc target) < (distanceTo option target) then
+            acc
+        else
+            option
+
+let GetClosestSolution target allTrees= 
+    let startValue = getTreeResult (List.item 1 allTrees)
+    let pret = List.fold (fun acc elem -> closestToTarget acc (getTreeResult elem) target) startValue allTrees
+    pret
+      
 //#region Krypto Game Solve New
 // <summary>
 //  kryptoSolutionWithTheseCards provides an interface to this F-Sharp Library from C-Sharp
@@ -315,16 +314,31 @@ let kryptoSolutionWithTheseCards ( array : ResizeArray<int>) =
     AllPermutationsOfCardsInPlay <- Krypto.getPermutations Krypto.CardsInPlay
     AllPossibleOperatorCombinations <- Krypto.getPermutationsWithRepitition Krypto.numberOfOperators Krypto.kryptoOperators
     let allTrees = getAllTreefromForestMatrix AllPermutationsOfCardsInPlay AllPossibleOperatorCombinations
+    let targetSolution = Krypto.getNodeValue Krypto.krytoResultCard
 
     let solutionTreeList =
         allTrees
-        |> List.filter (fun x -> (getTreeResult x) = (Krypto.getNodeValue Krypto.krytoResultCard))
+        |> List.filter (fun x -> (getTreeResult x) = targetSolution)
+
+    let closestSolution =
+        if (solutionTreeList.Length = 0) then 
+            GetClosestSolution targetSolution allTrees
+        else
+            nan
+
+    let closestSolutionTreeList = 
+        if (solutionTreeList.Length = 0) then 
+            allTrees |> List.filter (fun x -> (getTreeResult x) = closestSolution)
+        else
+            []
 
     let solutionStringList =
-        solutionTreeList
-        |> List.map (fun x -> (sprintf "%s" (getGTreeString (sortEachGBranch (GTreeFlatten (BTreeToGTree x))))))
-//Long            |> List.map (fun x -> (getTreeString x (sprintf "%s sorted  %s" (getGTreeString (GTreeFlatten (BTreeToGTree x))) (getGTreeString (sortEachGBranch (GTreeFlatten (BTreeToGTree x))))  )))
-            
+        if (solutionTreeList.Length = 0) then // no 'dead on' solution, now try for the closest
+            closestSolutionTreeList |> List.map (fun x -> (sprintf "%s" (getGTreeString (sortEachGBranch (GTreeFlatten (BTreeToGTree x))))))
+        else 
+            solutionTreeList |> List.map (fun x -> (sprintf "%s" (getGTreeString (sortEachGBranch (GTreeFlatten (BTreeToGTree x))))))
+            //Long            |> List.map (fun x -> (getTreeString x (sprintf "%s sorted  %s" (getGTreeString (GTreeFlatten (BTreeToGTree x))) (getGTreeString (sortEachGBranch (GTreeFlatten (BTreeToGTree x))))  )))
+                
     let secondPassSolutionStringList = solutionStringList |> List.distinct  
     // these next lines are all about returning the output to the calling function
     for aSolutionString in secondPassSolutionStringList do
@@ -333,6 +347,9 @@ let kryptoSolutionWithTheseCards ( array : ResizeArray<int>) =
    // solutionString <- sprintf "%s" solutionString
     let mutable Statistics = sprintf "%i Number of Operand Permutations\r\n%i Number of Operator Combinations\r\n%i  Total Number of Equations\r\n%i  Number of Solutions Found\r\n%i  Number of Distinct Solutions Found\r\n" AllPermutationsOfCardsInPlay.Length AllPossibleOperatorCombinations.Length allTrees.Length solutionTreeList.Length secondPassSolutionStringList.Length
 
-    sprintf "Stats = %s\r\nSolutions = %s" Statistics solutionString
+    if (solutionTreeList.Length = 0) then 
+        sprintf "Stats = %s\r\nCLOSEST SOLUTIONS = %s" Statistics solutionString
+    else
+        sprintf "Stats = %s\r\nExact Solutions = %s" Statistics solutionString
 
 //#endregion

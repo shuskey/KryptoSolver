@@ -4,7 +4,7 @@
 let unknown x y :float = 0.0
 
 type Node =
-    | Operator of operatorFunction : (float->float->float) * operatorName : string * orderOfOperationPriority : int
+    | Operator of operatorFunction : (float->float->float) * operatorName : string
     | Operand of value : float
     | Empty
 
@@ -15,37 +15,41 @@ let myDiv (x: float) y =
     then firstTry
     else nan
 
+let myPow (x: float) y =
+    x ** y
+
 
 // Defining some operators for quick reference
 let noop x y = 0.0
-let OPlus = Operator((+), "+", 1)
-let OMinus = Operator((-), "-", 1)
-let ODivide = Operator((myDiv), "÷", 2)
-let OTimes = Operator((*), "x", 2)
-let ONone = Operator((noop), "#", 9)
+let OPlus = Operator((+), "+")
+let OMinus = Operator((-), "-")
+let ODivide = Operator((myDiv), "÷")
+let OTimes = Operator((*), "x")
+let OPowerOf = Operator((myPow), "^")
+let ONone = Operator((noop), "#")
 
 let IsMinus node =
     match node with
     | Empty -> false
-    | Operator(f,s,o) when s = "-" -> true
+    | Operator(f,s) when s = "-" -> true
     | _ -> false
 
 let IsPlus node =
     match node with
     | Empty -> false
-    | Operator(f,s,o) when s = "+" -> true
+    | Operator(f,s) when s = "+" -> true
     | _ -> false
 
 let IsDivide node =
     match node with
     | Empty -> false
-    | Operator(f,s,o) when s = "÷" -> true
+    | Operator(f,s) when s = "÷" -> true
     | _ -> false
 
 let IsTimes node =
     match node with
     | Empty -> false
-    | Operator(f,s,o) when s = "x" -> true
+    | Operator(f,s) when s = "x" -> true
     | _ -> false        
 let getNodeString node =
     match node with
@@ -58,12 +62,6 @@ let getNodeValue node =
     | Empty -> 0.0
     | Operator(_) -> 0.0
     | Operand(value = v) -> v
-
-let getNodeOOP node =
-    match node with
-    | Empty -> 0
-    | Operator(orderOfOperationPriority = p) -> p
-    | Operand(_) -> 0
 
 let rec getNodeListString nodeList =
     match nodeList with
@@ -116,18 +114,18 @@ let kryptoCardDeck = List.concat ((List.replicate 3 cardsUpTo6) @ (List.replicat
 let mutable numberOfCardsInPlay = 4
 let mutable numberOfOperators = numberOfCardsInPlay - 1
 // Here are the Operations in the form of a tuple
-let kryptoOperators = [OPlus; OMinus; OTimes; ODivide]
+let kryptoOperators = [OPlus; OMinus; OTimes; ODivide; OPowerOf]
 
 /// Actions
 let dealKryptoCards = 
     let random = System.Random()
     fun count -> 
-        let cards = [for i in 1..count -> List.nth kryptoCardDeck (random.Next(kryptoCardDeck.Length))]
+        let cards = [for i in 1..count -> List.item (random.Next(kryptoCardDeck.Length)) kryptoCardDeck ]
         cards
 
 let dealAKryptoCard() = 
     let random = System.Random()
-    List.nth kryptoCardDeck (random.Next(kryptoCardDeck.Length))
+    List.item (random.Next(kryptoCardDeck.Length)) kryptoCardDeck 
 
 let rec kryptoCardsAsString cards =
     match cards with

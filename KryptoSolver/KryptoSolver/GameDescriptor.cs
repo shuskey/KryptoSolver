@@ -29,8 +29,10 @@ namespace KryptoSolver
                         "Four fours is a mathematical puzzle. The goal of four fours is to find the simplest mathematical expression" +
                         " for every whole number from 0 to some maximum, using only common mathematical symbols and the digit four." +
                         " Only the following operations may be used: addition, subtraction, multiplication, division," +
-                        " and parentheses, as well as concatenation (e.g., '44 is allowed)." +
-                        "\r\n### CONCATENATION COMING SOON ###" +
+                        " and powers, and parentheses.  The original game allowed concatenation of any of the 4's," +
+                        " but is not part of this implementation." +
+                        " In the case of powers, your must use one or more of the 4s, or operations on the 4s, to form your exponent." +
+                        "\r\nWhen an exact solution is not available, the closest solution is found. " +
                         "\r\nThe expression must have exactly four fours. No other digit is allowed. ";
                     DealButtonText = "Start Puzzle";
                     SolveButtonText = "Solve Next";
@@ -42,9 +44,11 @@ namespace KryptoSolver
                     Description = 
                         "Krypto Cards is a Mathematical Card Game. Five playing cards are dealt." +
                         " Then, a sixed card is reveiled, and is called the Target Card." +
-                        " You must add, subtract, multiply, or divide using each of the playing card numbers" +
-                        " to obtain the final solution equal to the Target Card." +
-                        " Fractions, decimals, roots, or exponents are not permitted." +
+                        " You must add, subtract, multiply, divide, or use 'to the power of (e.g., 3^4) using each of the playing card numbers" +
+                        " or to obtain the final solution equal to the Target Card." +
+                        " In the case of powers, your must use one or more of the playing cards, or operations on the playing cards, to form your exponent." +
+                        " Fractions are not permitted in your calculation." +
+                        "\r\nWhen an exact solution is not available, the closest solution is found. " +
                         "\r\nEach card must be used once and only once to obtain Target Card number. ";
                     DealButtonText = "Deal Cards";
                     SolveButtonText = "Solve Krypto";
@@ -59,8 +63,8 @@ namespace KryptoSolver
                         " You must add, subtract, multiply, divide, or powers using each of the playing dice" +
                         " to obtain the final solution equal to come as close as possible to the Target Number." +
                         " Fractions, decimals, roots, or exponents are not permitted." +
-                        " In the case of powers, your must use one or more of the playing dice to get your exponent." +
-                        "\r\n### POWERS AND FINDING CLOSEST SOLUTION COMING SOON ###" +
+                        " In the case of powers, you must use one or more of the playing dice to get your exponent." +
+                        "\r\nAgain, to repeat, when an exact solution is not available, the closest solution is found. " +
                         "\r\nEach playing dice must be used once and only once to obtain the Target Number. ";
                     DealButtonText = "Roll Dice";
                     SolveButtonText = "Solve Math Dice";
