@@ -270,7 +270,7 @@ let GetAllButLast list =
 let distanceTo option target =
      abs (target - option)
 
-let closestToTarget (acc :float) (option :float) (target :float) :(float) = 
+let closestToTarget acc option target = 
     if (option.Equals(nan)) then
         acc
     else

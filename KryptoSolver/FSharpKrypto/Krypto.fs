@@ -26,6 +26,7 @@ let OMinus = Operator((-), "-")
 let ODivide = Operator((myDiv), "÷")
 let OTimes = Operator((*), "x")
 let OPowerOf = Operator((myPow), "^")
+let OMod = Operator((%), "%")
 let ONone = Operator((noop), "#")
 
 let IsMinus node =
@@ -114,7 +115,7 @@ let kryptoCardDeck = List.concat ((List.replicate 3 cardsUpTo6) @ (List.replicat
 let mutable numberOfCardsInPlay = 4
 let mutable numberOfOperators = numberOfCardsInPlay - 1
 // Here are the Operations in the form of a tuple
-let kryptoOperators = [OPlus; OMinus; OTimes; ODivide; OPowerOf]
+let kryptoOperators = [OPlus; OMinus; OTimes; ODivide; OPowerOf; OMod]
 
 /// Actions
 let dealKryptoCards = 
