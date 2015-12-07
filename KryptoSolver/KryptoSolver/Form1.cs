@@ -127,7 +127,7 @@ namespace WindowsFormsApplication1
 
                 kryptoCardsDelt.Add(Convert.ToInt16(txtResultCard.Text));
 
-                txtKryptoSolution.Text = Tree.kryptoSolutionWithTheseCards(kryptoCardsDelt);
+                txtKryptoSolution.Text = Tree.kryptoSolutionWithTheseCards(kryptoCardsDelt, CurrentGame.useExponents, CurrentGame.useModulus, CurrentGame.findClosest);
 
 
 
@@ -153,25 +153,66 @@ namespace WindowsFormsApplication1
         private void RBtnMathDiceCheckedChanged(object sender, EventArgs e)
         {
             if (rBtnMathDice.Checked)
+            {
                 CurrentGame = MathDiceGame;
+                cBoxExp.Checked = CurrentGame.useExponents;
+                cBoxMod.Checked = CurrentGame.useModulus;
+                cBoxClosest.Checked = CurrentGame.findClosest;
+            }
+
         }
 
         private void rBtnFourFOurs_CheckedChanged(object sender, EventArgs e)
         {
             if (rBtnFourFours.Checked)
+            { 
                 CurrentGame = FourFoursGame;
+                cBoxExp.Checked = CurrentGame.useExponents;
+                cBoxMod.Checked = CurrentGame.useModulus;
+                cBoxClosest.Checked = CurrentGame.findClosest;
+            }
         }
 
         private void rBtnKryptoCards_CheckedChanged(object sender, EventArgs e)
         {
             if (rBtnKryptoCards.Checked)
+            {
                 CurrentGame = KryptoCardGame;
+                cBoxExp.Checked = CurrentGame.useExponents;
+                cBoxMod.Checked = CurrentGame.useModulus;
+                cBoxClosest.Checked = CurrentGame.findClosest;
+            }
 
         }
 
         private void txtUpDnNumberofOperands_ValueChanged(object sender, EventArgs e)
         {
             var clampedVal = changeNumberOfOperands((int) txtUpDnNumberofOperands.Value);
+        }
+
+        private void toolTip1_Popup(object sender, PopupEventArgs e)
+        {
+
+        }
+
+        private void label2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void cBoxExp_CheckedChanged(object sender, EventArgs e)
+        {
+            CurrentGame.useExponents = cBoxExp.Checked;
+        }
+
+        private void cBoxMod_CheckedChanged(object sender, EventArgs e)
+        {
+            CurrentGame.useModulus = cBoxMod.Checked;
+        }
+
+        private void cBoxClosest_CheckedChanged(object sender, EventArgs e)
+        {
+            CurrentGame.findClosest = cBoxClosest.Checked;
         }
     }
 }

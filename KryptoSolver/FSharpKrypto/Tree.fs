@@ -299,9 +299,17 @@ let GetClosestSolution target allTrees=
 //   Target Solution.  This string may also include some cool statistics about the calulations that were needed
 //   to solve the Krypto Puzzle.
 // </returns>
-let kryptoSolutionWithTheseCards ( array : ResizeArray<int>) =
+let kryptoSolutionWithTheseCards ( array : ResizeArray<int>, useexp : bool, usemod : bool, findClosest : bool) =
     let kryptoList = Seq.toList array       // Convert this to an F-Sharp List
     let mutable solutionString = ""
+
+    //Krypto.kryptoOperators <- [Krypto.OPlus; Krypto.OMinus; Krypto.OTimes; Krypto.ODivide; Krypto.OMod]
+    Krypto.kryptoOperators <-
+        match useexp, usemod with
+        | true, true -> [Krypto.OPlus; Krypto.OMinus; Krypto.OTimes; Krypto.ODivide; Krypto.OPowerOf; Krypto.OMod]
+        | false, true -> [Krypto.OPlus; Krypto.OMinus; Krypto.OTimes; Krypto.ODivide; Krypto.OMod]
+        | true, false -> [Krypto.OPlus; Krypto.OMinus; Krypto.OTimes; Krypto.ODivide; Krypto.OPowerOf]
+        | false, false -> [Krypto.OPlus; Krypto.OMinus; Krypto.OTimes; Krypto.ODivide]
 
     Krypto.numberOfCardsInPlay <- kryptoList.Length - 1
     Krypto.numberOfOperators <- Krypto.numberOfCardsInPlay - 1
@@ -327,13 +335,13 @@ let kryptoSolutionWithTheseCards ( array : ResizeArray<int>) =
             nan
 
     let closestSolutionTreeList = 
-        if (solutionTreeList.Length = 0) then 
+        if (solutionTreeList.Length = 0 && findClosest) then 
             allTrees |> List.filter (fun x -> (getTreeResult x) = closestSolution)
         else
             []
 
     let solutionStringList =
-        if (solutionTreeList.Length = 0) then // no 'dead on' solution, now try for the closest
+        if (solutionTreeList.Length = 0 && findClosest) then // no 'dead on' solution, now try for the closest
             closestSolutionTreeList |> List.map (fun x -> (sprintf "%s" (getGTreeString (sortEachGBranch (GTreeFlatten (BTreeToGTree x))))))
         else 
             solutionTreeList |> List.map (fun x -> (sprintf "%s" (getGTreeString (sortEachGBranch (GTreeFlatten (BTreeToGTree x))))))
@@ -347,7 +355,7 @@ let kryptoSolutionWithTheseCards ( array : ResizeArray<int>) =
    // solutionString <- sprintf "%s" solutionString
     let mutable Statistics = sprintf "%i Number of Operand Permutations\r\n%i Number of Operator Combinations\r\n%i  Total Number of Equations\r\n%i  Number of Solutions Found\r\n%i  Number of Distinct Solutions Found\r\n" AllPermutationsOfCardsInPlay.Length AllPossibleOperatorCombinations.Length allTrees.Length solutionTreeList.Length secondPassSolutionStringList.Length
 
-    if (solutionTreeList.Length = 0) then 
+    if (solutionTreeList.Length = 0 && findClosest) then 
         sprintf "Stats = %s\r\nCLOSEST SOLUTIONS = %s" Statistics solutionString
     else
         sprintf "Stats = %s\r\nExact Solutions = %s" Statistics solutionString

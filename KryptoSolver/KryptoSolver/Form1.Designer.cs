@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.txtCard1 = new System.Windows.Forms.TextBox();
             this.btnDealCards = new System.Windows.Forms.Button();
@@ -48,6 +49,11 @@
             this.txtGameDescription = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.txtUpDnNumberofOperands = new System.Windows.Forms.NumericUpDown();
+            this.cBoxExp = new System.Windows.Forms.CheckBox();
+            this.cBoxMod = new System.Windows.Forms.CheckBox();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.cBoxClosest = new System.Windows.Forms.CheckBox();
+            this.label3 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.txtUpDnNumberofOperands)).BeginInit();
@@ -63,7 +69,7 @@
             // 
             // btnDealCards
             // 
-            this.btnDealCards.Location = new System.Drawing.Point(13, 136);
+            this.btnDealCards.Location = new System.Drawing.Point(10, 281);
             this.btnDealCards.Name = "btnDealCards";
             this.btnDealCards.Size = new System.Drawing.Size(104, 30);
             this.btnDealCards.TabIndex = 0;
@@ -73,10 +79,10 @@
             // 
             // btnSolveKrypto
             // 
-            this.btnSolveKrypto.Location = new System.Drawing.Point(380, 285);
+            this.btnSolveKrypto.Location = new System.Drawing.Point(496, 283);
             this.btnSolveKrypto.Name = "btnSolveKrypto";
             this.btnSolveKrypto.Size = new System.Drawing.Size(103, 28);
-            this.btnSolveKrypto.TabIndex = 7;
+            this.btnSolveKrypto.TabIndex = 8;
             this.btnSolveKrypto.Text = "Solve Krypto";
             this.btnSolveKrypto.UseVisualStyleBackColor = true;
             this.btnSolveKrypto.Click += new System.EventHandler(this.btnSolveKrypto_Click);
@@ -91,7 +97,7 @@
             this.txtKryptoSolution.Multiline = true;
             this.txtKryptoSolution.Name = "txtKryptoSolution";
             this.txtKryptoSolution.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtKryptoSolution.Size = new System.Drawing.Size(484, 183);
+            this.txtKryptoSolution.Size = new System.Drawing.Size(589, 183);
             this.txtKryptoSolution.TabIndex = 8;
             // 
             // txtCard2
@@ -132,7 +138,7 @@
             this.txtResultCard.Location = new System.Drawing.Point(281, 17);
             this.txtResultCard.Name = "txtResultCard";
             this.txtResultCard.Size = new System.Drawing.Size(34, 25);
-            this.txtResultCard.TabIndex = 6;
+            this.txtResultCard.TabIndex = 7;
             // 
             // label1
             // 
@@ -154,7 +160,7 @@
             this.groupBox1.Controls.Add(this.txtCard3);
             this.groupBox1.Controls.Add(this.txtCard2);
             this.groupBox1.Controls.Add(this.txtCard1);
-            this.groupBox1.Location = new System.Drawing.Point(12, 271);
+            this.groupBox1.Location = new System.Drawing.Point(137, 271);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(336, 49);
             this.groupBox1.TabIndex = 10;
@@ -167,7 +173,7 @@
             this.txtCard6.Location = new System.Drawing.Point(213, 17);
             this.txtCard6.Name = "txtCard6";
             this.txtCard6.Size = new System.Drawing.Size(34, 25);
-            this.txtCard6.TabIndex = 10;
+            this.txtCard6.TabIndex = 6;
             // 
             // groupBox2
             // 
@@ -177,7 +183,7 @@
             this.groupBox2.Location = new System.Drawing.Point(12, 12);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(119, 100);
-            this.groupBox2.TabIndex = 12;
+            this.groupBox2.TabIndex = 9;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Game Style";
             // 
@@ -225,22 +231,23 @@
             this.txtGameDescription.Location = new System.Drawing.Point(137, 19);
             this.txtGameDescription.Multiline = true;
             this.txtGameDescription.Name = "txtGameDescription";
-            this.txtGameDescription.Size = new System.Drawing.Size(360, 246);
+            this.txtGameDescription.Size = new System.Drawing.Size(465, 246);
             this.txtGameDescription.TabIndex = 13;
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(16, 192);
+            this.label2.Location = new System.Drawing.Point(12, 227);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(99, 13);
+            this.label2.Size = new System.Drawing.Size(50, 13);
             this.label2.TabIndex = 15;
-            this.label2.Text = "Numer of Operands";
+            this.label2.Text = "Numer of";
+            this.label2.Click += new System.EventHandler(this.label2_Click);
             // 
             // txtUpDnNumberofOperands
             // 
             this.txtUpDnNumberofOperands.Font = new System.Drawing.Font("Consolas", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtUpDnNumberofOperands.Location = new System.Drawing.Point(19, 208);
+            this.txtUpDnNumberofOperands.Location = new System.Drawing.Point(86, 230);
             this.txtUpDnNumberofOperands.Maximum = new decimal(new int[] {
             6,
             0,
@@ -253,7 +260,7 @@
             0});
             this.txtUpDnNumberofOperands.Name = "txtUpDnNumberofOperands";
             this.txtUpDnNumberofOperands.Size = new System.Drawing.Size(33, 25);
-            this.txtUpDnNumberofOperands.TabIndex = 16;
+            this.txtUpDnNumberofOperands.TabIndex = 13;
             this.txtUpDnNumberofOperands.Value = new decimal(new int[] {
             5,
             0,
@@ -261,11 +268,67 @@
             0});
             this.txtUpDnNumberofOperands.ValueChanged += new System.EventHandler(this.txtUpDnNumberofOperands_ValueChanged);
             // 
+            // cBoxExp
+            // 
+            this.cBoxExp.AutoSize = true;
+            this.cBoxExp.Location = new System.Drawing.Point(15, 135);
+            this.cBoxExp.Name = "cBoxExp";
+            this.cBoxExp.Size = new System.Drawing.Size(107, 17);
+            this.cBoxExp.TabIndex = 10;
+            this.cBoxExp.Text = "Use ^ Exponents";
+            this.toolTip1.SetToolTip(this.cBoxExp, "Exponent is how many times the number will be multiplied by itself.  4^3 = 4 x 4 " +
+        "x 4 = 64.");
+            this.cBoxExp.UseVisualStyleBackColor = true;
+            this.cBoxExp.CheckedChanged += new System.EventHandler(this.cBoxExp_CheckedChanged);
+            // 
+            // cBoxMod
+            // 
+            this.cBoxMod.AutoSize = true;
+            this.cBoxMod.Location = new System.Drawing.Point(15, 158);
+            this.cBoxMod.Name = "cBoxMod";
+            this.cBoxMod.Size = new System.Drawing.Size(99, 17);
+            this.cBoxMod.TabIndex = 11;
+            this.cBoxMod.Text = "Use % Modulus";
+            this.toolTip1.SetToolTip(this.cBoxMod, "Modulus is the remainder after doing a division. 17 % 3 = 2 because 17 / 3 has a " +
+        "remainder of 2.");
+            this.cBoxMod.UseVisualStyleBackColor = true;
+            this.cBoxMod.CheckedChanged += new System.EventHandler(this.cBoxMod_CheckedChanged);
+            // 
+            // toolTip1
+            // 
+            this.toolTip1.Popup += new System.Windows.Forms.PopupEventHandler(this.toolTip1_Popup);
+            // 
+            // cBoxClosest
+            // 
+            this.cBoxClosest.AutoSize = true;
+            this.cBoxClosest.Location = new System.Drawing.Point(15, 181);
+            this.cBoxClosest.Name = "cBoxClosest";
+            this.cBoxClosest.Size = new System.Drawing.Size(83, 17);
+            this.cBoxClosest.TabIndex = 12;
+            this.cBoxClosest.Text = "Find Closest";
+            this.toolTip1.SetToolTip(this.cBoxClosest, "If there is no exact solution, find the closest.  This may make the time to solve" +
+        " up to 3 times slower.");
+            this.cBoxClosest.UseVisualStyleBackColor = true;
+            this.cBoxClosest.CheckedChanged += new System.EventHandler(this.cBoxClosest_CheckedChanged);
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(12, 242);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(53, 13);
+            this.label3.TabIndex = 20;
+            this.label3.Text = "Operands";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(506, 521);
+            this.ClientSize = new System.Drawing.Size(611, 521);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.cBoxClosest);
+            this.Controls.Add(this.cBoxMod);
+            this.Controls.Add(this.cBoxExp);
             this.Controls.Add(this.txtUpDnNumberofOperands);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.txtGameDescription);
@@ -308,6 +371,11 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.NumericUpDown txtUpDnNumberofOperands;
         public System.Windows.Forms.TextBox txtCard6;
+        private System.Windows.Forms.CheckBox cBoxExp;
+        private System.Windows.Forms.CheckBox cBoxMod;
+        private System.Windows.Forms.ToolTip toolTip1;
+        private System.Windows.Forms.CheckBox cBoxClosest;
+        private System.Windows.Forms.Label label3;
     }
 }
 

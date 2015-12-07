@@ -15,6 +15,9 @@ namespace KryptoSolver
         public string DealButtonText = null;
         public string SolveButtonText = null;
         public int NumberOfOperands = 0;
+        public Boolean useExponents = false;
+        public Boolean useModulus = false;
+        public Boolean findClosest = false;
         public RandomizerType RandomizerType = RandomizerType.Undefined;
         private Random random = new Random();
         private CardDeck deck = new CardDeck();
@@ -29,7 +32,7 @@ namespace KryptoSolver
                         "Four fours is a mathematical puzzle. The goal of four fours is to find the simplest mathematical expression" +
                         " for every whole number from 0 to some maximum, using only common mathematical symbols and the digit four." +
                         " Only the following operations may be used: addition, subtraction, multiplication, division," +
-                        " and powers, and parentheses.  The original game allowed concatenation of any of the 4's," +
+                        " and exponents, modulus, and parentheses.  The original game allowed concatenation of any of the 4's," +
                         " but is not part of this implementation." +
                         " In the case of powers, your must use one or more of the 4s, or operations on the 4s, to form your exponent." +
                         "\r\nWhen an exact solution is not available, the closest solution is found. " +
@@ -37,6 +40,9 @@ namespace KryptoSolver
                     DealButtonText = "Start Puzzle";
                     SolveButtonText = "Solve Next";
                     NumberOfOperands = 4;
+                    useExponents = true;
+                    useModulus = true;
+                    findClosest = false;
                     RandomizerType = RandomizerType.Fours;
                 break;
                 case GameType.KryptoCards:
@@ -44,15 +50,16 @@ namespace KryptoSolver
                     Description = 
                         "Krypto Cards is a Mathematical Card Game. Five playing cards are dealt." +
                         " Then, a sixed card is reveiled, and is called the Target Card." +
-                        " You must add, subtract, multiply, divide, or use 'to the power of (e.g., 3^4) using each of the playing card numbers" +
-                        " or to obtain the final solution equal to the Target Card." +
-                        " In the case of powers, your must use one or more of the playing cards, or operations on the playing cards, to form your exponent." +
+                        " You must add, subtract, multiply, or divide using each of the playing card numbers" +
+                        " to obtain the final solution equal to the Target Card." +                       
                         " Fractions are not permitted in your calculation." +
-                        "\r\nWhen an exact solution is not available, the closest solution is found. " +
                         "\r\nEach card must be used once and only once to obtain Target Card number. ";
                     DealButtonText = "Deal Cards";
                     SolveButtonText = "Solve Krypto";
                     NumberOfOperands = 5;
+                    useExponents = false;
+                    useModulus = false;
+                    findClosest = false;
                     RandomizerType = RandomizerType.Card;
                 break;
                 case GameType.MathDice:
@@ -68,8 +75,10 @@ namespace KryptoSolver
                         "\r\nEach playing dice must be used once and only once to obtain the Target Number. ";
                     DealButtonText = "Roll Dice";
                     SolveButtonText = "Solve Math Dice";
-
                     NumberOfOperands = 3;
+                    useExponents = false;
+                    useModulus = false;
+                    findClosest = true;
                     RandomizerType = RandomizerType.Dice;
                     break;
             }  
