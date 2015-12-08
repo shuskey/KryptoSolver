@@ -7,9 +7,12 @@ using FSharpKrypto;
 
 namespace KryptoSolver
 {
+    /// <summary>
+    /// GameDescriptor
+    /// Contains all that is unique about these similar, but unique games.
+    /// </summary>
     public class GameDescriptor
     {
-
         public GameType GameType = GameType.Undefined;
         public string Description = null;
         public string DealButtonText = null;
@@ -21,7 +24,11 @@ namespace KryptoSolver
         public RandomizerType RandomizerType = RandomizerType.Undefined;
         private Random random = new Random();
         private CardDeck deck = new CardDeck();
-        
+
+        /// <summary>
+        /// Constructs a GameDescriptor for the given gameType
+        /// </summary>
+        /// <param name="gameType">The Game Type that you would like to construct</param>
         public GameDescriptor(GameType gameType)
         {
             switch (gameType)
@@ -49,7 +56,7 @@ namespace KryptoSolver
                     GameType = GameType.KryptoCards;
                     Description = 
                         "Krypto Cards is a Mathematical Card Game. Five playing cards are dealt." +
-                        " Then, a sixed card is reveiled, and is called the Target Card." +
+                        " Then, a sixth card is reveiled, and is called the Target Card." +
                         " You must add, subtract, multiply, or divide using each of the playing card numbers" +
                         " to obtain the final solution equal to the Target Card." +                       
                         " Fractions are not permitted in your calculation." +
@@ -83,7 +90,10 @@ namespace KryptoSolver
                     break;
             }  
         }
-
+        /// <summary>
+        /// Operands are generated differently based on the type of game
+        /// </summary>
+        /// <returns></returns>
         public int getOperand()
         {
             int returnVal = 0;
@@ -103,6 +113,10 @@ namespace KryptoSolver
             return returnVal;
 
         }
+        /// <summary>
+        /// Targets are generated differently based on the game type
+        /// </summary>
+        /// <returns></returns>
         public int getTarget()
         {
             int returnVal = 0;

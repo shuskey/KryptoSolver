@@ -1,23 +1,13 @@
 ﻿module FSharpKrypto.Krypto
 
 //#region Node Definitions
-let unknown x y :float = 0.0
-
 type Node =
     | Operator of operatorFunction : (float->float->float) * operatorName : string
     | Operand of value : float
     | Empty
 
-
-let myDiv (x: float) y =
-    let firstTry = x / y
-    if ((firstTry % 1.0) = 0.0)
-    then firstTry
-    else nan
-
 let myPow (x: float) y =
     x ** y
-
 
 // Defining some operators for quick reference
 let noop x y = 0.0
@@ -51,7 +41,8 @@ let IsTimes node =
     match node with
     | Empty -> false
     | Operator(f,s) when s = "x" -> true
-    | _ -> false        
+    | _ -> false   
+         
 let getNodeString node =
     match node with
     | Empty -> ""
@@ -68,12 +59,6 @@ let rec getNodeListString nodeList =
     match nodeList with
     | [] -> ""
     | h::t -> sprintf "%s, %s" (getNodeString h) (getNodeListString t)
-//#endregion
-
-//#region helpers
-let pause() = 
-    printfn "%s" "<Press any key>"
-    System.Console.ReadKey() |> ignore
 //#endregion
 
 //#region getPermutations
@@ -138,15 +123,5 @@ let rec kryptoCardsAsString cards =
 //region Krypto Game Run
 let mutable CardsInPlay = [for x in 1..numberOfCardsInPlay -> dealAKryptoCard()]
 let mutable krytoResultCard = dealAKryptoCard()
-//let kryptoCardsAndResultString = sprintf "%s = %s" (kryptoCardsAsString CardsInPlay) (getNodeString krytoResultCard)
 
-//let shuffleKryptoDeck =
-//    let random = System.Random()
-//    CardsInPlay <- [for i in 1..numberOfCardsInPlay -> List.nth kryptoCardDeck (random.Next(kryptoCardDeck.Length))]
-//    krytoResultCard <- List.nth kryptoCardDeck (random.Next(kryptoCardDeck.Length))
-//    sprintf "%s = %s" (kryptoCardsAsString CardsInPlay) (getNodeString krytoResultCard)
-
-let myRandom =
-    let random = System.Random()
-    random.Next(100)
 //#endregion

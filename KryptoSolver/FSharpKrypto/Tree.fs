@@ -1,27 +1,17 @@
 ﻿module FSharpKrypto.Tree
 
-// TODO
-// (DONE)Remove redundant parentheses, see: http://stackoverflow.com/questions/18400741/remove-redundant-parentheses-from-an-arithmetic-expression
-// Check for and eliminate duplicate answers, perhaps order the equation then do a string compare
-//   To do this, a flattenBTreeToGTree is needed, then a call to a sortGTree nodes, then a getGTreeString.
-//   The resultant list of strings will be ready for a "solutionStringList |> List.distinct" that will eliminate far
-//   more dulpicates that we have inherited because of our crazy 'all permutations' 'all combinations' that we went 
-//   through to find ALL answers.
-
 // I am using the "F# Outlining" extension from Victor Milovanov
 //#region General Tree, GBranch, Gleaf
 // General Tree Reference: 
 // http://stackoverflow.com/questions/2815236/f-recursive-collect-and-filter-over-n-ary-tree
 // A General Tree is either empty or it is composed of a root element and a list of successors, 
 // which are General Trees themselves.
-
 type 'a GeneralTree = Empty | GBranch of 'a * 'a GeneralTree list
 
 type 'a GeneralList = 'a GeneralTree list
 
 // Since a "leaf" node is a branch with no subtrees, it can be useful to define a 
 // shorthand function:
-
 let Gleaf x = GBranch (x, []) 
 //#endregion
 //#region Display General Tree helpers
@@ -131,9 +121,6 @@ let rec getTreeString' (parentOperator :Krypto.Node) t leftOrRight=
     | "#", Branch ( node, lt, rt), _ -> sprintf "%s%s%s" (getTreeString' node lt "L") (Krypto.getNodeString node) (getTreeString' node rt "R")
     | _, Branch ( node, lt, rt), _ -> sprintf "(%s%s%s)" (getTreeString' node lt "L") (Krypto.getNodeString node) (getTreeString' node rt "R")
 
-//    | Branch ( Krypto.Operator(f,s,o), lt, rt) when parentOperator > o -> sprintf "(%s%s%s)" (getTreeString' o lt) s (getTreeString' o rt)
-//    | Branch ( Krypto.Operator(f,s,o), lt, rt) -> sprintf "%s%s%s" (getTreeString' o lt) s (getTreeString' o rt)
-
 let getTreeString t more =
     sprintf "%s = %.0f  more %s" (getTreeString' Krypto.ONone t "L") (getTreeResult t) more // Top parent, lowest order of operation -> Parentheses not needed
 
@@ -159,22 +146,14 @@ let rec GTreeFlatten' (leftOrRight :string) (grandParentOperator :Krypto.Node) (
     // gp = grandParentOperator
     // D gp (A-B)+C
     | _,_,_, [] -> []
-   // | GBranch (node, []) -> [Gleaf (node)]
-    //| GBranch (Krypto.Operator(f,s,o), h::t) when parentOperator > o -> [GBranch (Krypto.Operator(f,s,o), List.concat (h |> List.map (GTreeFlatten' o)) @ (List.map (t |> GTreeFlatten' o)))]
     | _,_,_, [GBranch (Krypto.Node.Empty, _);_] -> []
     | _,_,_, [GBranch (node, [])] -> [Gleaf (node)]
-  ////  | _,_,_,GBranch (x, [])::t -> gtl
-  ////  | _,_,_,GBranch (x, [])::t -> [GBranch (parentOperator, gtl)]
-    //    -> [Gleaf(x)] @ (GTreeFlatten' grandParentOperator parentOperator t "R")
     | _,_,"x", GBranch (node,h)::t when // (AxB)xC -> AxBxC, Ax(BxC) -> AxBxC
         (Krypto.IsTimes node)
         ->  GTreeFlatten' "L" parentOperator node h @ GTreeFlatten' "R" parentOperator node t
     | "R","-","-", GBranch (node,h)::t when // (A - (B+C))  -> A-B-C  works for    (A - (B+C)) - D  but not A - ((B+C) - D)
         (Krypto.IsPlus node)  
         ->  GTreeFlatten' "L" parentOperator Krypto.OMinus h @ GTreeFlatten' "R" parentOperator node t
-//    | "R","-","-", GBranch (node,h)::t when    // A-(B+C) -> A-B-C nice!
-//        (Krypto.IsPlus node) // We can not mix operations in a GTree||  (Krypto.IsMinus node) // A-(B-C) -> A-B+C
-//        ->  GTreeFlatten' "L" parentOperator Krypto.OMinus h @ GTreeFlatten' "R" parentOperator Krypto.OMinus t
     | "L","+","+", GBranch (node,h)::t when // +(A+B)+C -> A+B+C
         (Krypto.IsPlus node) // We can not mix operations in a GTree|| (Krypto.IsMinus node) 
         ->  GTreeFlatten' "L" parentOperator node h @ GTreeFlatten' "R" parentOperator node t
@@ -189,11 +168,7 @@ let rec GTreeFlatten' (leftOrRight :string) (grandParentOperator :Krypto.Node) (
         ->  GTreeFlatten' "L" parentOperator node h @ GTreeFlatten' "R" parentOperator node t
     | _,_,_, GBranch (node,h)::t 
         -> [GBranch (node, (GTreeFlatten' "L" parentOperator node h))] @ (GTreeFlatten' "R" grandParentOperator parentOperator t)
-    //| GBranch (x, [])::t -> [GBranch (parentOperator,  [Gleaf (x)] @ (GTreeFlatten' parentOperator t))]
-    ////| _,_,_,GBranch (x, [])::t -> [Gleaf (x)] @ (GTreeFlatten' parentOperator parentOperator t "R")
     | _,_,_,_ -> (GTreeFlatten' "L" Krypto.ONone Krypto.ONone [])
-    //| h::t -> (GTreeFlatten' o h) @ List.concat (t |> List.map (GTreeFlatten' o))
-    //| GBranch (node, h::t) -> GBranch (node, [(GTreeFlatten h)] @ List.concat [(List.map GTreeFlatten t)])
 
 let GTreeFlatten (gt:(Krypto.Node GeneralTree)) :(Krypto.Node GeneralTree)=
     match gt with
@@ -201,8 +176,8 @@ let GTreeFlatten (gt:(Krypto.Node GeneralTree)) :(Krypto.Node GeneralTree)=
     | GBranch (node, []) -> Gleaf (node) 
     | GBranch (node, gtlist) -> GBranch (node, GTreeFlatten' "L" Krypto.OPlus node gtlist)
 
-//#endregion
-// (12+5) + (11+4) + 12 + 11 + 15 (12+4)
+//#region test area for working with trees by hand for learning or just for debugging
+(*
 let TwelvePlusFive = Branch (Krypto.OPlus, leaf (Krypto.Operand(12.0)), leaf (Krypto.Operand(5.0)))
 let ElevenPlusFour = Branch (Krypto.OPlus, leaf (Krypto.Operand(11.0)), leaf (Krypto.Operand(4.0)))
 let TwelvePlusFour = Branch (Krypto.OPlus, leaf (Krypto.Operand(12.0)), leaf (Krypto.Operand(4.0)))
@@ -221,8 +196,11 @@ let GFSTree1 = sortEachGBranch GFTree1
 let GFSTree1String = getGTreeString GFSTree1
 let GFTree1String = getGTreeString GFTree1
 let treeString1 = getTreeString tree1 GFTree1String
+
 let ts = tree1 |> (fun x -> (getTreeString x ((getGTreeString (GTreeFlatten (BTreeToGTree x))))))
-let x = 0
+*)
+//#endregion
+
 //#region leaf functions on Binary Trees
 let rec allTreeLeafList' leafCount operands operators =
     match leafCount, operands, operators with
@@ -256,9 +234,6 @@ let getAllTreefromForestMatrix allPermutationsOfCardsInPlay allPossibleOperatorC
 
 let mutable AllPermutationsOfCardsInPlay = Krypto.getPermutations Krypto.CardsInPlay
 let mutable AllPossibleOperatorCombinations = Krypto.getPermutationsWithRepitition Krypto.numberOfOperators Krypto.kryptoOperators
-
-//let kryptoSolutionWithTheseCardsTest ( array : ResizeArray<int>) =
-//    sprintf "btree = %s\r\ngtree = %s\r\nftree = %s" treeString1 GTreeString1 GFTree1String
 
 let GetAllButLast list =
     let rec but_last' list' acc =
@@ -303,7 +278,6 @@ let kryptoSolutionWithTheseCards ( array : ResizeArray<int>, useexp : bool, usem
     let kryptoList = Seq.toList array       // Convert this to an F-Sharp List
     let mutable solutionString = ""
 
-    //Krypto.kryptoOperators <- [Krypto.OPlus; Krypto.OMinus; Krypto.OTimes; Krypto.ODivide; Krypto.OMod]
     Krypto.kryptoOperators <-
         match useexp, usemod with
         | true, true -> [Krypto.OPlus; Krypto.OMinus; Krypto.OTimes; Krypto.ODivide; Krypto.OPowerOf; Krypto.OMod]
