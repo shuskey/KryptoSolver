@@ -222,15 +222,27 @@ let allTreeLeafList operands operators =
 //#endregion
 
 
+
 let getEquationTreesForTheseCards allPossibleCombinationsOfOperators onePermutationOfCards =
     List.concat (allPossibleCombinationsOfOperators 
     |> List.map 
         (allTreeLeafList onePermutationOfCards))
 
+let asyncGetEquationTreesForTheseCards allPossibleCombinationsOfOperators onePermutationOfCards = async {
+    let equationTrees = List.concat (allPossibleCombinationsOfOperators |> List.map (allTreeLeafList onePermutationOfCards))
+    return equationTrees
+}
+
 let getAllTreefromForestMatrix allPermutationsOfCardsInPlay allPossibleOperatorCombinations =
     List.concat (allPermutationsOfCardsInPlay 
     |> List.map
         (getEquationTreesForTheseCards allPossibleOperatorCombinations))
+
+let asyncGetAllTreefromForestMatrix allPermutationsOfCardsInPlay allPossibleOperatorCombinations = async {
+    //do! Async.Sleep 5000
+    let allTrees = (List.concat (allPermutationsOfCardsInPlay |> List.map (asyncGetEquationTreesForTheseCards allPossibleOperatorCombinations) |> Async.Parallel |> Async.RunSynchronously))
+    return allTrees
+}
 
 let mutable AllPermutationsOfCardsInPlay = Krypto.getPermutations Krypto.CardsInPlay
 let mutable AllPossibleOperatorCombinations = Krypto.getPermutationsWithRepitition Krypto.numberOfOperators Krypto.kryptoOperators
@@ -258,44 +270,9 @@ let GetClosestSolution target allTrees=
     let startValue = getTreeResult (List.item 1 allTrees)
     let pret = List.fold (fun acc elem -> closestToTarget acc (getTreeResult elem) target) startValue allTrees
     pret
-      
-//#region Krypto Game Solve New
-// <summary>
-//  kryptoSolutionWithTheseCards provides an interface to this F-Sharp Library from C-Sharp
-//  It will evaluate all possible permutations of cards and all combinations of operations
-//  along with all combinations of computational order (Parentheses), then determine which
-//  equations are equal to the desired Target Solution.
-// </summary>
-// <param name="array"> This is an array of integer values.  All but the last element in this array are
-// the 'Cards in Play'.  The last element of this array is the Target Solution Value.</param>
-// <returns>
-//   This will return a String which represents a human readable list off all the equations that match the 
-//   Target Solution.  This, under some circumstances, will be a list of equations that come CLOSEST to the
-//   Target Solution.  This string may also include some cool statistics about the calulations that were needed
-//   to solve the Krypto Puzzle.
-// </returns>
-let kryptoSolutionWithTheseCards ( array : ResizeArray<int>, useexp : bool, usemod : bool, findClosest : bool) =
-    let kryptoList = Seq.toList array       // Convert this to an F-Sharp List
-    let mutable solutionString = ""
-
-    Krypto.kryptoOperators <-
-        match useexp, usemod with
-        | true, true -> [Krypto.OPlus; Krypto.OMinus; Krypto.OTimes; Krypto.ODivide; Krypto.OPowerOf; Krypto.OMod]
-        | false, true -> [Krypto.OPlus; Krypto.OMinus; Krypto.OTimes; Krypto.ODivide; Krypto.OMod]
-        | true, false -> [Krypto.OPlus; Krypto.OMinus; Krypto.OTimes; Krypto.ODivide; Krypto.OPowerOf]
-        | false, false -> [Krypto.OPlus; Krypto.OMinus; Krypto.OTimes; Krypto.ODivide]
-
-    Krypto.numberOfCardsInPlay <- kryptoList.Length - 1
-    Krypto.numberOfOperators <- Krypto.numberOfCardsInPlay - 1
-    Krypto.CardsInPlay <- kryptoList 
-        |> GetAllButLast                         // all but the last, are the cards in play
-        |> List.map (fun x -> float x) 
-        |> List.map (fun x -> Krypto.Operand x)
-   
-    Krypto.krytoResultCard <- Krypto.Operand(float array.[kryptoList.Length - 1])
-    AllPermutationsOfCardsInPlay <- Krypto.getPermutations Krypto.CardsInPlay
-    AllPossibleOperatorCombinations <- Krypto.getPermutationsWithRepitition Krypto.numberOfOperators Krypto.kryptoOperators
-    let allTrees = getAllTreefromForestMatrix AllPermutationsOfCardsInPlay AllPossibleOperatorCombinations
+  
+let finilizeOutput (allTrees, findClosest) =
+    
     let targetSolution = Krypto.getNodeValue Krypto.krytoResultCard
 
     let solutionTreeList =
@@ -320,18 +297,70 @@ let kryptoSolutionWithTheseCards ( array : ResizeArray<int>, useexp : bool, usem
         else 
             solutionTreeList |> List.map (fun x -> (sprintf "%s" (getGTreeString (sortEachGBranch (GTreeFlatten (BTreeToGTree x))))))
             //Long            |> List.map (fun x -> (getTreeString x (sprintf "%s sorted  %s" (getGTreeString (GTreeFlatten (BTreeToGTree x))) (getGTreeString (sortEachGBranch (GTreeFlatten (BTreeToGTree x))))  )))
-                
+
     let secondPassSolutionStringList = solutionStringList |> List.distinct  
     // these next lines are all about returning the output to the calling function
-    for aSolutionString in secondPassSolutionStringList do
-        solutionString <- sprintf "%s\r\n%s" solutionString aSolutionString
 
-   // solutionString <- sprintf "%s" solutionString
-    let mutable Statistics = sprintf "%i Number of Operand Permutations\r\n%i Number of Operator Combinations\r\n%i  Total Number of Equations\r\n%i  Number of Solutions Found\r\n%i  Number of Distinct Solutions Found\r\n" AllPermutationsOfCardsInPlay.Length AllPossibleOperatorCombinations.Length allTrees.Length solutionTreeList.Length secondPassSolutionStringList.Length
+    let Statistics = sprintf "%i Number of Operand Permutations\r\n%i Number of Operator Combinations\r\n%i  Total Number of Equations\r\n%i  Number of Solutions Found\r\n%i  Number of Distinct Solutions Found\r\n" AllPermutationsOfCardsInPlay.Length AllPossibleOperatorCombinations.Length allTrees.Length solutionTreeList.Length secondPassSolutionStringList.Length
 
     if (solutionTreeList.Length = 0 && findClosest) then 
-        sprintf "Stats = %s\r\nCLOSEST SOLUTIONS = %s" Statistics solutionString
+        sprintf "Stats = %s\r\nCLOSEST SOLUTIONS = %s" Statistics (List.toArray secondPassSolutionStringList |> String.concat "\r\n")
     else
-        sprintf "Stats = %s\r\nExact Solutions = %s" Statistics solutionString
+        sprintf "Stats = %s\r\nExact Solutions = %s" Statistics (List.toArray secondPassSolutionStringList |> String.concat "\r\n")
+    
+//#region Krypto Game Solve New
+// <summary>
+//  kryptoSolutionWithTheseCards provides an interface to this F-Sharp Library from C-Sharp
+//  It will evaluate all possible permutations of cards and all combinations of operations
+//  along with all combinations of computational order (Parentheses), then determine which
+//  equations are equal to the desired Target Solution.
+// </summary>
+// <param name="array"> This is an array of integer values.  All but the last element in this array are
+// the 'Cards in Play'.  The last element of this array is the Target Solution Value.</param>
+// <returns>
+//   This will return a String which represents a human readable list off all the equations that match the 
+//   Target Solution.  This, under some circumstances, will be a list of equations that come CLOSEST to the
+//   Target Solution.  This string may also include some cool statistics about the calulations that were needed
+//   to solve the Krypto Puzzle.
+// </returns>
+let asyncKryptoSolutionWithTheseListCards ( cardList : list<int>, useexp : bool, usemod : bool, findClosest : bool) =
+    async {
+    Krypto.kryptoOperators <-
+        match useexp, usemod with
+        | true, true -> [Krypto.OPlus; Krypto.OMinus; Krypto.OTimes; Krypto.ODivide; Krypto.OPowerOf; Krypto.OMod]
+        | false, true -> [Krypto.OPlus; Krypto.OMinus; Krypto.OTimes; Krypto.ODivide; Krypto.OMod]
+        | true, false -> [Krypto.OPlus; Krypto.OMinus; Krypto.OTimes; Krypto.ODivide; Krypto.OPowerOf]
+        | false, false -> [Krypto.OPlus; Krypto.OMinus; Krypto.OTimes; Krypto.ODivide]
+
+    Krypto.numberOfCardsInPlay <- cardList.Length - 1
+    Krypto.numberOfOperators <- Krypto.numberOfCardsInPlay - 1
+    Krypto.CardsInPlay <- cardList 
+        |> GetAllButLast                         // all but the last, are the cards in play
+        |> List.map (fun x -> float x) 
+        |> List.map (fun x -> Krypto.Operand x)
+   
+    // Last item is the Solution card
+    Krypto.krytoResultCard <- Krypto.Operand(float (List.head (List.rev cardList)))
+
+    AllPermutationsOfCardsInPlay <- Krypto.getPermutations Krypto.CardsInPlay
+
+    AllPossibleOperatorCombinations <- Krypto.getPermutationsWithRepitition Krypto.numberOfOperators Krypto.kryptoOperators
+    let! allTrees = asyncGetAllTreefromForestMatrix AllPermutationsOfCardsInPlay AllPossibleOperatorCombinations
+    return finilizeOutput (allTrees, findClosest)
+
+    }
+
+let kryptoSolutionWithTheseCards ( arrayCards : ResizeArray<int>, useexp : bool, usemod : bool, findClosest : bool) =
+   // let tokenSource = new System.Threading.CancellationTokenSource()
+    Async.RunSynchronously(
+
+        asyncKryptoSolutionWithTheseListCards ((Seq.toList arrayCards), useexp, usemod, findClosest)
+
+    )
+
+let cancelKryptoSolution (arg : bool) =
+    Async.CancelDefaultToken()
+    true
+                
 
 //#endregion

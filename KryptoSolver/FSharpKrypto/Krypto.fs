@@ -9,11 +9,17 @@ type Node =
 let myPow (x: float) y =
     x ** y
 
+let myDiv (x: float) y =
+    let firstTry = x / y
+    if ((firstTry % 1.0) = 0.0)
+    then firstTry
+    else nan
+
 // Defining some operators for quick reference
 let noop x y = 0.0
 let OPlus = Operator((+), "+")
 let OMinus = Operator((-), "-")
-let ODivide = Operator((/), "÷")
+let ODivide = Operator((myDiv), "÷")
 let OTimes = Operator((*), "x")
 let OPowerOf = Operator((myPow), "^")
 let OMod = Operator((%), "%")
@@ -107,6 +113,12 @@ let dealKryptoCards =
     let random = System.Random()
     fun count -> 
         let cards = [for i in 1..count -> List.item (random.Next(kryptoCardDeck.Length)) kryptoCardDeck ]
+        cards
+
+let dealKryptoIntCards = 
+    let random = System.Random()
+    fun count -> 
+        let cards = [for i in 1..count -> int (getNodeValue (List.item (random.Next(kryptoCardDeck.Length)) kryptoCardDeck)) ]
         cards
 
 let dealAKryptoCard() = 

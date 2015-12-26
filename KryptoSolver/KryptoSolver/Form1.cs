@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
+using System.Threading;
 using System.Windows.Forms;
 using FSharpKrypto;
 using KryptoSolver;
@@ -55,7 +57,8 @@ namespace WindowsFormsApplication1
         {
             txtCard1.Text = txtCard2.Text = txtCard3.Text = txtCard4.Text = txtCard5.Text = txtCard6.Text = "";
             txtResultCard.Text = "";
-            txtKryptoSolution.Text = "Click the '" + CurrentGame.DealButtonText + "' Button to get started.";
+            txtKryptoSolution.Clear();
+            txtKryptoSolution.AppendText("Click the '" + CurrentGame.DealButtonText + "' Button to get started.");
 
             txtCard3.Visible = (CurrentGame.NumberOfOperands > 2);
             txtCard4.Visible = (CurrentGame.NumberOfOperands > 3);
@@ -81,73 +84,81 @@ namespace WindowsFormsApplication1
             if (CurrentGame.NumberOfOperands > 5) txtCard6.Text = CurrentGame.getOperand().ToString();
 
             txtResultCard.Text = CurrentGame.getTarget().ToString();
-
-            txtKryptoSolution.Text = "Now click the '" + CurrentGame.SolveButtonText + "' Button to have the computer solve this.";
+            
 
             if (CurrentGameType == GameType.FourFours)
-                SolveKrypto();
+            {
+                txtKryptoSolution.Clear();
+                txtKryptoSolution.AppendText("Starting on first 'Four Fours' solution...");
+                backgroundWorker1.RunWorkerAsync();
+                //SolveKrypto();
+            }
+            else
+            {
+                txtKryptoSolution.Clear();
+                txtKryptoSolution.AppendText("Now click the '" + CurrentGame.SolveButtonText + "' Button to have the computer solve this.");
+            }
+
 
             //textBox1.Text = Krypto.kryptoCardsAndResultString;
         }
 
         private void btnSolveKrypto_Click(object sender, EventArgs e)
         {
-            try
+            if (btnSolveKrypto.Text.Equals("Cancel") || backgroundWorker1.IsBusy)
             {
-                if (CurrentGameType == GameType.FourFours) // This is a Solve Next operation so increment the Result Card before solving
-                    txtResultCard.Text = (Convert.ToInt16(txtResultCard.Text) + 1).ToString();
+                Tree.cancelKryptoSolution(true);
+                //WHEN THE CANCEL ACTUALLY HAPPENS DO THE FOLLOWING
+                //if (backgroundWorker1.IsBusy) backgroundWorker1.CancelAsync();
+                //EnableUI(true);
             }
-            catch (Exception)
+            else
             {
-                txtKryptoSolution.Text =
-                    "Invalid Input.  Please insure that the operands and target values are all integer numbers and try again." +
-                    "\r\n\nTry clicking the '" + CurrentGame.DealButtonText + "' Button." ;
-            }
 
-            SolveKrypto();
+                txtKryptoSolution.Clear();
+                //txtKryptoSolution.Text = null;
+                txtKryptoSolution.AppendText("Thinking...");
+
+                try
+                {
+                    if (CurrentGameType == GameType.FourFours)
+                        // This is a Solve Next operation so increment the Result Card before solving
+                        txtResultCard.Text = (Convert.ToInt16(txtResultCard.Text) + 1).ToString();
+                }
+                catch (Exception)
+                {
+                    txtKryptoSolution.Clear();
+                    txtKryptoSolution.AppendText(
+                        "Invalid Input.  Please insure that the operands and target values are all integer numbers and try again." +
+                        "\r\n\nTry clicking the '" + CurrentGame.DealButtonText + "' Button.");
+                }
+
+                EnableUI(false);
+                // http://stuff.seans.com/2009/05/21/net-basics-do-work-in-background-thread-to-keep-gui-responsive/
+
+                backgroundWorker1.RunWorkerAsync();
+                //SolveKrypto();
+            }
         }
 
-        private void SolveKrypto()
+        private void EnableUI(bool enable)
         {
-            List<int> kryptoCardsDelt = new List<int>();
+            this.rBtnKryptoCards.Enabled = this.rBtnMathDice.Enabled = this.rBtnFourFours.Enabled = enable;
+            this.cBoxExp.Enabled = this.cBoxMod.Enabled = this.cBoxClosest.Enabled = enable;
+            this.txtUpDnNumberofOperands.Enabled = enable;
+            this.txtCard1.Enabled = this.txtCard2.Enabled = this.txtCard3.Enabled =
+                this.txtCard4.Enabled = this.txtCard5.Enabled = this.txtCard6.Enabled = enable;
+            this.txtResultCard.Enabled = enable;
+            this.btnDealCards.Enabled = enable;
+            if (enable)
+            {
+                this.btnSolveKrypto.Text = CurrentGame.SolveButtonText;
+            }
+            else
+            {
+                this.btnSolveKrypto.Text = "Cancel";
+            }
             
-
-            kryptoStopwatch.Start();
-
-            txtKryptoSolution.Text = "Thinking...";
-            //MessageBox.Show("Krypto Solver", "Here we go!");
-            try
-            {
-                kryptoCardsDelt.Add(Convert.ToInt16(txtCard1.Text));
-                kryptoCardsDelt.Add(Convert.ToInt16(txtCard2.Text));
-                if (CurrentGame.NumberOfOperands > 2) kryptoCardsDelt.Add(Convert.ToInt16(txtCard3.Text));
-                if (CurrentGame.NumberOfOperands > 3) kryptoCardsDelt.Add(Convert.ToInt16(txtCard4.Text));
-                if (CurrentGame.NumberOfOperands > 4) kryptoCardsDelt.Add(Convert.ToInt16(txtCard5.Text));
-                if (CurrentGame.NumberOfOperands > 5) kryptoCardsDelt.Add(Convert.ToInt16(txtCard6.Text));
-
-                kryptoCardsDelt.Add(Convert.ToInt16(txtResultCard.Text));
-
-                txtKryptoSolution.Text = Tree.kryptoSolutionWithTheseCards(kryptoCardsDelt, CurrentGame.useExponents, CurrentGame.useModulus, CurrentGame.findClosest);
-
-
-
-                kryptoStopwatch.Stop();
-                TimeSpan elapsedTime = kryptoStopwatch.Elapsed;
-                string showTimeAs = String.Format("{0:00}:{1:00}:{2:00}.{3:00}", elapsedTime.Hours, elapsedTime.Minutes, elapsedTime.Seconds, elapsedTime.Milliseconds / 10);
-
-                txtKryptoSolution.Text += "\r\r\nElapsed Time: " + showTimeAs;
-                
-                kryptoStopwatch.Reset();
-            }
-            catch (Exception)
-            {
-
-                txtKryptoSolution.Text =
-                    "Invalid Input.  Please insure that the operands and target values are all integer numbers and try again."+
-                    "\r\n\nTry clicking the '" + CurrentGame.DealButtonText + "' Button.";
-
-            }
-
         }
 
         private void RBtnMathDiceCheckedChanged(object sender, EventArgs e)
@@ -214,5 +225,83 @@ namespace WindowsFormsApplication1
         {
             CurrentGame.findClosest = cBoxClosest.Checked;
         }
+
+        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+        {
+
+            List<int> kryptoCardsDelt = new List<int>();
+            string sArgument = (string)e.Argument;
+
+        
+            kryptoStopwatch.Start();
+
+
+            kryptoCardsDelt.Add(Convert.ToInt16(txtCard1.Text));
+            kryptoCardsDelt.Add(Convert.ToInt16(txtCard2.Text));
+            if (CurrentGame.NumberOfOperands > 2) kryptoCardsDelt.Add(Convert.ToInt16(txtCard3.Text));
+            if (CurrentGame.NumberOfOperands > 3) kryptoCardsDelt.Add(Convert.ToInt16(txtCard4.Text));
+            if (CurrentGame.NumberOfOperands > 4) kryptoCardsDelt.Add(Convert.ToInt16(txtCard5.Text));
+            if (CurrentGame.NumberOfOperands > 5) kryptoCardsDelt.Add(Convert.ToInt16(txtCard6.Text));
+
+            kryptoCardsDelt.Add(Convert.ToInt16(txtResultCard.Text));
+
+            var tmpSolutionString = Tree.kryptoSolutionWithTheseCards(kryptoCardsDelt, CurrentGame.useExponents,
+                CurrentGame.useModulus, CurrentGame.findClosest);
+
+            //var tmpSolutionString = Tree.kryptoMain(kryptoCardsDelt, CurrentGame.useExponents,
+            //    CurrentGame.useModulus, CurrentGame.findClosest);
+
+
+            //for (int i = 0; i <= 100; i++)
+            //{
+            //    Thread.Sleep(100);
+            //    if (backgroundWorker1.CancellationPending)
+            //    {
+            //        e.Cancel = true;
+            //        return;
+            //    }
+            //}
+
+            //var tmpSolutionString = "Success. just sleeping for 10 seconds";
+
+            kryptoStopwatch.Stop();
+            TimeSpan elapsedTime = kryptoStopwatch.Elapsed;
+            string showTimeAs = String.Format("{0:00}:{1:00}:{2:00}.{3:00}", elapsedTime.Hours,
+                elapsedTime.Minutes, elapsedTime.Seconds, elapsedTime.Milliseconds / 10);
+
+            e.Result = tmpSolutionString + "\r\r\nElapsed Time: " + showTimeAs;
+
+            kryptoStopwatch.Reset();
+
+        }
+
+        private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+
+            if (e.Error != null)
+            {
+                txtKryptoSolution.Clear();
+                txtKryptoSolution.AppendText(e.Error.Message);
+                //MessageBox.Show(e.Error.Message);
+            }
+            else
+            {
+                if (e.Cancelled)
+                {
+                    txtKryptoSolution.Clear();
+                    txtKryptoSolution.AppendText("Processing Cancelled");
+                }
+                else
+                {
+                    txtKryptoSolution.Clear();
+                    txtKryptoSolution.AppendText((string)e.Result);
+
+                }
+            }
+
+            EnableUI(true);
+
+        }
+
     }
 }

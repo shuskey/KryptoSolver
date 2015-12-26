@@ -54,6 +54,7 @@
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.cBoxClosest = new System.Windows.Forms.CheckBox();
             this.label3 = new System.Windows.Forms.Label();
+            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.txtUpDnNumberofOperands)).BeginInit();
@@ -79,9 +80,9 @@
             // 
             // btnSolveKrypto
             // 
-            this.btnSolveKrypto.Location = new System.Drawing.Point(496, 283);
+            this.btnSolveKrypto.Location = new System.Drawing.Point(479, 283);
             this.btnSolveKrypto.Name = "btnSolveKrypto";
-            this.btnSolveKrypto.Size = new System.Drawing.Size(103, 28);
+            this.btnSolveKrypto.Size = new System.Drawing.Size(120, 28);
             this.btnSolveKrypto.TabIndex = 8;
             this.btnSolveKrypto.Text = "Solve Krypto";
             this.btnSolveKrypto.UseVisualStyleBackColor = true;
@@ -249,7 +250,7 @@
             this.txtUpDnNumberofOperands.Font = new System.Drawing.Font("Consolas", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtUpDnNumberofOperands.Location = new System.Drawing.Point(86, 230);
             this.txtUpDnNumberofOperands.Maximum = new decimal(new int[] {
-            6,
+            5,
             0,
             0,
             0});
@@ -320,6 +321,12 @@
             this.label3.TabIndex = 20;
             this.label3.Text = "Operands";
             // 
+            // backgroundWorker1
+            // 
+            this.backgroundWorker1.WorkerSupportsCancellation = true;
+            this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
+            this.backgroundWorker1.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker1_RunWorkerCompleted);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -376,6 +383,7 @@
         private System.Windows.Forms.ToolTip toolTip1;
         private System.Windows.Forms.CheckBox cBoxClosest;
         private System.Windows.Forms.Label label3;
+        private System.ComponentModel.BackgroundWorker backgroundWorker1;
     }
 }
 

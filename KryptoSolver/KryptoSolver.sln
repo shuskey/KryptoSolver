@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KryptoSolver", "KryptoSolve
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharpKrypto", "FSharpKrypto\FSharpKrypto.fsproj", "{98107DDE-6AF4-4022-8F75-3F81E9E7775D}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "AsyncTesting", "AsyncTesting\AsyncTesting.fsproj", "{8946B4CF-E1D0-421F-B86B-9216D02FF44D}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "BackGroundWorker", "BackGroundWorker\BackGroundWorker.fsproj", "{E3EB9B52-D72C-4F19-BE2C-CA6DE4772A71}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{98107DDE-6AF4-4022-8F75-3F81E9E7775D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{98107DDE-6AF4-4022-8F75-3F81E9E7775D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{98107DDE-6AF4-4022-8F75-3F81E9E7775D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8946B4CF-E1D0-421F-B86B-9216D02FF44D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8946B4CF-E1D0-421F-B86B-9216D02FF44D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8946B4CF-E1D0-421F-B86B-9216D02FF44D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8946B4CF-E1D0-421F-B86B-9216D02FF44D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3EB9B52-D72C-4F19-BE2C-CA6DE4772A71}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3EB9B52-D72C-4F19-BE2C-CA6DE4772A71}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3EB9B52-D72C-4F19-BE2C-CA6DE4772A71}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3EB9B52-D72C-4F19-BE2C-CA6DE4772A71}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
